@@ -1,47 +1,53 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Book } from '../types/Book';
 import './BookDetailPage.css';
 import ConfirmationModal from './ConfirmationModal';
+import { UserContext } from './UserContext';
+import { format } from 'date-fns';
 
 type Inventory = {
   id: string;
   user: string | null;
-  date: string | null;
+  loanDate: string | null;
 };
 
 const BookDetailPage: React.FC = () => {
-    const { bookId } = useParams<{ bookId: string }>();
-    const [book, setBook] = useState<Book | null>(null);
-    const [inventory, setInventory] = useState<Inventory[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [modalMessage, setModalMessage] = useState<string>('');
-    const [selectedInventoryId, setSelectedInventoryId] = useState<string | null>(null);
-    const [actionType, setActionType] = useState<'borrow' | 'return' | null>(null);
+  const userContext = useContext(UserContext);
+  if (!userContext) {
+    throw new Error('UserContext must be used within a UserProvider');
+  }
+  const { user } = userContext;
+  const { bookId } = useParams<{ bookId: string }>();
+  const [book, setBook] = useState<Book | null>(null);
+  const [inventory, setInventory] = useState<Inventory[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [modalMessage, setModalMessage] = useState<string>('');
+  const [selectedInventoryId, setSelectedInventoryId] = useState<string | null>(null);
+  const [actionType, setActionType] = useState<'borrow' | 'return' | null>(null);
+
+  const fetchBookDetails = async () => {
+    try {
+      const bookUrl = `${import.meta.env.REACT_APP_API_URL || 'http://localhost:8080'}/books/${bookId}`;
+      const response = await fetch(bookUrl);
+      const data = await response.json();
+      setBook({
+        id: data.id,
+        title: data.title,
+        author: data.author,
+        image: data.image,
+        inventoryUserResponseList: data.inventoryUserResponseList,
+      });
+      setInventory(data.inventoryUserResponseList);
+    } catch (error) {
+      console.error('Error fetching book details:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchBookDetails = async () => {
-      try {
-        const bookUrl = `${import.meta.env.REACT_APP_API_URL || 'http://localhost:8080/books'}/${bookId}`;
-        const response = await fetch(bookUrl);
-        const data = await response.json();
-        console.log(data);
-        setBook({
-            id: data.id,
-            title: data.title,
-            author: data.author,
-            image: data.image,
-            inventoryUserResponseList: data.inventoryUserResponseList
-          });
-          setInventory(data.inventoryUserResponseList);
-      } catch (error) {
-        console.error('Error fetching book details:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (bookId) {
       fetchBookDetails();
     }
@@ -68,44 +74,16 @@ const BookDetailPage: React.FC = () => {
     setActionType(null);
   };
 
-  const handleConfirm = () => {
-    if (selectedInventoryId && actionType) {
-      // Perform the borrow or return action
-      console.log(`${actionType} inventory item with id ${selectedInventoryId}`);
-    }
-    closeModal();
+  const handleConfirm = async () => {
+      try {
+        await fetchBookDetails();
+      } catch (error) {
+        console.error('Error fetching');
+      } finally {
+        closeModal();
+      }
   };
 
-  const handleBorrowReturn = async (inventoryId: string, action: 'borrow' | 'return') => {
-    console.log(`${action} inventory item with id ${inventoryId}`);
-  
-    const url = action === 'borrow' ? '/borrow' : '/return';
-    const userId = 'user123';
-  
-    const borrowRequest = {
-      userId: userId,        
-      inventoryId: inventoryId 
-    };
-  
-    try {
-      const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(borrowRequest),
-      });
-  
-      if (response.status === 202) {
-        console.log(`${action} was successful for inventory item with id ${inventoryId}`);
-      } else {
-        const errorMessage = await response.text();
-        console.error(`Failed to ${action}:`, errorMessage);
-      }
-    } catch (error) {
-      console.error(`Error occurred while trying to ${action}:`, error);
-    }
-  };
 
   return (
     <div className="book-detail-container">
@@ -130,18 +108,18 @@ const BookDetailPage: React.FC = () => {
               <tr key={item.id}>
                 <td>{item.id}</td>
                 <td>{item.user || 'N/A'}</td>
-                <td>{item.date || 'N/A'}</td>
+                <td>{item.loanDate ? format(new Date(item.loanDate), 'yyyy/MM') : 'N/A'}</td>
                 <td>
                   {item.user ? (
                     <button
-                    onClick={() => openModal(item.id, 'return')}
+                      onClick={() => openModal(item.id, 'return')}
                       className="action-button return"
                     >
                       Return
                     </button>
                   ) : (
                     <button
-                    onClick={() => openModal(item.id, 'borrow')}
+                      onClick={() => openModal(item.id, 'borrow')}
                       className="action-button borrow"
                     >
                       Borrow
@@ -158,6 +136,9 @@ const BookDetailPage: React.FC = () => {
         message={modalMessage}
         onConfirm={handleConfirm}
         onClose={closeModal}
+        inventoryId={selectedInventoryId}
+        action={actionType || 'borrow'}
+        userId={user?.id || null}
       />
 
     </div>

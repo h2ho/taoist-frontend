@@ -12,14 +12,13 @@ function LandingPage() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const apiUrl = import.meta.env.REACT_APP_API_URL || 'http://localhost:8080/books';;
+        const apiUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/books`;
         if (!apiUrl) {
           console.error('API URL is undefined');
         }
-        const response = await fetch(apiUrl); 
+        const response = await fetch(apiUrl);
         const data = await response.json();
-        setBooks(data); 
-        console.log(data);
+        setBooks(data);
       } catch (error) {
         console.error('Error fetching books:', error);
       } finally {
@@ -27,16 +26,14 @@ function LandingPage() {
       }
     };
 
-    fetchBooks(); 
+    fetchBooks();
   }, []);
 
-  // If the data is still loading, display a loading message
   if (loading) {
     return <div>Loading books...</div>;
   }
 
   const handleBookClick = (bookId: string) => {
-    // Navigate to the book detail page using book ID
     navigate(`/books/${bookId}`);
   };
 
@@ -56,7 +53,7 @@ function LandingPage() {
         </div>
       </section>
     </div>
-    
+
   )
 }
 
