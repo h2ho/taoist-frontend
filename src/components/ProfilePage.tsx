@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from './UserContext';
 import './ProfilePage.css'
-import { Book } from '../types/Book';
+import { Inventory } from '../types/Inventory';
 
 function ProfilePage() {
 
@@ -10,7 +10,7 @@ function ProfilePage() {
         throw new Error('UserContext must be used within a UserProvider');
     }
     const { user, isLoggedIn } = userContext;
-    const [books, setBooks] = useState<Book[]>([]);
+    const [inventories, setInventory] = useState<Inventory[]>([]);
 
     useEffect(() => {
         if (userContext) {
@@ -19,15 +19,17 @@ function ProfilePage() {
                     const apiUrl = `${import.meta.env.REACT_APP_API_URL || 'http://localhost:8080'}/user/${user.id}`;
                     const response = await fetch(apiUrl);
                     const data = await response.json();
-                    console.log(data.inventoryBookResponses);
-                    const borrowedBooks = data.inventoryBookResponses.map((inventoryItem: any) => ({
-                        id: inventoryItem.bookResponse?.id,
-                        title: inventoryItem.bookResponse?.title,
-                        image: inventoryItem.bookResponse?.image,
-                        author: inventoryItem.bookResponse?.author
+                    const inventoriesList = data.inventoryBookResponses.map((inventoryItem: any) => ({
+                        id: inventoryItem.id,
+                        book: {
+                            id: inventoryItem.bookResponse?.id,
+                            title: inventoryItem.bookResponse?.title,
+                            image: inventoryItem.bookResponse?.image,
+                            author: inventoryItem.bookResponse?.author
+                        }
                     }));
-                    console.log(borrowedBooks);
-                    setBooks(borrowedBooks);
+
+                    setInventory(inventoriesList);
                 } catch (error) {
                     console.error('Error fetching books:', error);
                 }
@@ -53,11 +55,11 @@ function ProfilePage() {
 
             <h3>Borrowed Books</h3>
             <div className="borrowed-books-grid">
-                {books.length > 0 ? (
-                    books.map((book) => (
-                        <div key={book.id} className="book-card">
-                            <img src={book.image} alt={book.title} className="book-cover" />
-                            <p>{book.title}</p>
+                {inventories.length > 0 ? (
+                    inventories.map((inventory) => (
+                        <div key={inventory.id} className="book-card">
+                            <img src={inventory.book.image} alt={inventory.book.title} className="book-cover" />
+                            <p>{inventory.book.title}</p>
                         </div>
                     ))
                 ) : (
