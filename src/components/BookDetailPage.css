@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f8f8f8;
+    background-color: #fff;
     margin: 0;
     padding: 20px;
 }
@@ -76,28 +76,28 @@ tbody td {
 }
 
 tbody tr:last-child td {
-    border-bottom: none; /* Remove bottom border from the last row */
+    border-bottom: none;
 }
 
 .action-button {
     background: none;
     border: none;
-    color: #007bff;  /* Blue text color */
+    color: #007bff;
     font-size: 14px;
     font-weight: bold;
     text-decoration: none;
     cursor: pointer;
     padding: 0;
-  }
-  
-  .action-button:hover {
-    text-decoration: underline;  /* Underline on hover to indicate it's clickable */
-  }
-  
-  .action-button.return {
-    color: #007bff;  /* Blue color for Return button */
-  }
-  
-  .action-button.borrow {
-    color: #007bff;  /* Blue color for Borrow button */
-  }
+}
+
+.action-button:hover {
+    text-decoration: underline;
+}
+
+.action-button.return {
+    color: #007bff;
+}
+
+.action-button.borrow {
+    color: #007bff;
+}
