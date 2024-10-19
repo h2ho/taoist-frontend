@@ -1,0 +1,30 @@
+.header {
+    display: flex;
+    justify-content: space-between; /* Positions title on one side and button on the other */
+    align-items: center;
+    padding: 20px;
+    width: 100%; /* Make sure the header takes up the full width of the page */
+    box-sizing: border-box;
+    background-color: #f8f8f8;
+}
+
+.title {
+    font-size: 24px;
+    margin: 0;
+}
+
+.user-button {
+    padding: 10px 20px;
+    background-color: transparent; /* Transparent background */
+    color: #333; /* Change the text color to a neutral dark color */
+    border: none; /* Remove border */
+    text-transform: uppercase; /* Make the text uppercase */
+    font-weight: bold; /* Thicker text */
+    font-size: 14px; /* Ensure text is not too large */
+    cursor: pointer;
+}
+
+.user-button:hover {
+    background-color: #e0e0e0; /* Subtle background change on hover */
+    color: #333; /* Keep text color consistent on hover */
+}

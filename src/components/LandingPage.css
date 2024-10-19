@@ -1,0 +1,56 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8f8f8;
+  }
+  
+  h1 {
+    margin: 0;
+    font-size: 24px;
+  }
+  
+  .books-section {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .books-section h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+  }
+  
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    justify-items: center;
+  }
+  
+  .book-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 14px;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .book-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    margin-bottom: 12px;
+  }
+  
+  .book-title {
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  .book-author {
+    color: #777;
+    font-size: 14px;
+  }
